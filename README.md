@@ -20,6 +20,7 @@ sam build
 # for the first time
 sam deploy --guided
 # from the second time
+sam deploy
 ```
 
 ## Logs
