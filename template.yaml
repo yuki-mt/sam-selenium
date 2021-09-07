@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-selenium
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  ScrapeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Layers:
+        - !Ref ChromiumLayer
+        - !Ref PythonDepLayer
+      CodeUri: src
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 * * * ? *)
+            Enabled: false
+      MemorySize: 2048
+      Timeout: 100
+  ChromiumLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: chromium-selenium-layer
+      Description: Headless Chromium and Selenium WebDriver
+      ContentUri: ./layers/selenium-binaries
+      CompatibleRuntimes:
+        - python3.7
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+  PythonDepLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: selenium-layer
+      Description: Selenium, Requests, Chromedriver-binary
+      ContentUri: ./layers/python-dependencies
+      CompatibleRuntimes:
+        - python3.7
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
